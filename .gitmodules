@@ -1,3 +1,4 @@
 [submodule "c-periphery"]
 	path = c-periphery
-	url = https://github.com/vsergeev/c-periphery.git
+	url = https://github.com/pqlaz/c-periphery.git
+	branch = reduce_option
