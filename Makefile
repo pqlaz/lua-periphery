@@ -1,5 +1,29 @@
 LIB = periphery.so
-SRCS = src/lua_periphery.c src/lua_mmio.c src/lua_gpio.c src/lua_spi.c src/lua_i2c.c src/lua_serial.c
+SRCS = src/lua_periphery.c
+OPTIONS =
+ifndef NOMMIO
+SRCS += src/lua_mmio.c
+OPTIONS += -DMMIO
+endif
+ifndef NOGPIO
+SRCS += src/lua_gpio.c
+OPTIONS += -DGPIO
+endif
+ifndef NOSPI
+SRCS += src/lua_spi.c
+OPTIONS += -DSPI
+endif
+ifndef NOI2C
+SRCS += src/lua_i2c.c
+OPTIONS += -DI2C
+endif
+ifndef NOSERIAL
+SRCS += src/lua_serial.c
+OPTIONS += -DSERIAL
+endif
+ifndef NOSLEEP
+OPTIONS += -DSLEEP
+endif
 
 C_PERIPHERY = c-periphery
 C_PERIPHERY_LIB = $(C_PERIPHERY)/periphery.a
@@ -41,7 +65,7 @@ install:
 ###########################################################################
 
 $(LIB): $(C_PERIPHERY_LIB) $(SRCS)
-	$(CC) $(MOD_CFLAGS) $(MOD_LDFLAGS) $(SRCS) $(C_PERIPHERY_LIB) -o $@
+	$(CC) $(OPTIONS) $(MOD_CFLAGS) $(MOD_LDFLAGS) $(SRCS) $(C_PERIPHERY_LIB) -o $@
 
 $(C_PERIPHERY_LIB): $(C_PERIPHERY)/Makefile
 	cd $(C_PERIPHERY); $(MAKE)

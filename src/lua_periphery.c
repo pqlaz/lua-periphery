@@ -14,17 +14,28 @@
 #include "lua_periphery.h"
 #include "lua_compat.h"
 
+#ifdef GPIO
 LUALIB_API int luaopen_periphery_gpio(lua_State *L);
+#endif
+#ifdef SPI
 LUALIB_API int luaopen_periphery_spi(lua_State *L);
+#endif
+#ifdef MMIO
 LUALIB_API int luaopen_periphery_mmio(lua_State *L);
+#endif
+#ifdef I2C
 LUALIB_API int luaopen_periphery_i2c(lua_State *L);
+#endif
+#ifdef SERIAL
 LUALIB_API int luaopen_periphery_serial(lua_State *L);
+#endif
 
 static int periphery_error_tostring(lua_State *L) {
     lua_getfield(L, -1, "message");
     return 1;
 }
 
+#ifdef SLEEP
 static int periphery_sleep(lua_State *L) {
     unsigned int duration;
 
@@ -60,6 +71,7 @@ static int periphery_sleep_us(lua_State *L) {
 
     return 0;
 }
+#endif
 
 LUALIB_API int luaopen_periphery(lua_State *L) {
     /* Create error metatable with __tostring */
@@ -71,30 +83,42 @@ LUALIB_API int luaopen_periphery(lua_State *L) {
     /* Create table of sub-modules */
     lua_newtable(L);
 
+#ifdef GPIO
     luaopen_periphery_gpio(L);
     lua_setfield(L, -2, "GPIO");
+#endif
 
+#ifdef SPI
     luaopen_periphery_spi(L);
     lua_setfield(L, -2, "SPI");
+#endif
 
+#ifdef I2C
     luaopen_periphery_i2c(L);
     lua_setfield(L, -2, "I2C");
+#endif
 
+#ifdef SERIAL
     luaopen_periphery_serial(L);
     lua_setfield(L, -2, "Serial");
+#endif
 
+#ifdef MMIO
     luaopen_periphery_mmio(L);
     lua_setfield(L, -2, "MMIO");
+#endif
 
     lua_pushstring(L, LUA_PERIPHERY_VERSION);
     lua_setfield(L, -2, "version");
 
+#ifdef SLEEP
     lua_pushcclosure(L, periphery_sleep, 0);
     lua_setfield(L, -2, "sleep");
     lua_pushcclosure(L, periphery_sleep_ms, 0);
     lua_setfield(L, -2, "sleep_ms");
     lua_pushcclosure(L, periphery_sleep_us, 0);
     lua_setfield(L, -2, "sleep_us");
+#endif
 
     return 1;
 }
